@@ -10,7 +10,7 @@ import LandingPage from './components/LandingPage';
 import AdminPanel from './components/AdminPanel';
 import Chat from './components/Chat';
 import { db } from './firebase';
-import { collection, addDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where } from 'firebase/firestore';
 
 const DEFAULT_PLAYLIST = [
   {
@@ -67,10 +67,15 @@ function App() {
   };
 
   // Firestore Real-time Listener
+  // Firestore Real-time Listener & Auto-Cleanup
   useEffect(() => {
     if (userType === 'couple') {
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+      // 1. Query only recent messages
       const q = query(
         collection(db, "messages"),
+        where("timestamp", ">", twentyFourHoursAgo),
         orderBy("timestamp", "asc"),
         limit(100)
       );
@@ -82,6 +87,27 @@ function App() {
         }));
         setChatMessages(msgs);
       });
+
+      // 2. Background Cleanup Task (Fire and Forget)
+      const cleanupOldMessages = async () => {
+        try {
+          const oldMsgQuery = query(
+            collection(db, "messages"),
+            where("timestamp", "<=", twentyFourHoursAgo)
+          );
+          const snapshot = await getDocs(oldMsgQuery);
+          if (!snapshot.empty) {
+            console.log(`Cleaning up ${snapshot.size} old messages...`);
+            const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+            await Promise.all(deletePromises);
+            console.log("Cleanup complete.");
+          }
+        } catch (e) {
+          console.error("Cleanup error:", e);
+        }
+      };
+
+      cleanupOldMessages();
 
       return () => unsubscribe();
     }
@@ -95,6 +121,24 @@ function App() {
       });
     } catch (e) {
       console.error("Error sending message: ", e);
+    }
+  };
+
+  const handleClearChat = async () => {
+    try {
+      // Note: In a real app, we should use a batch delete or cloud function.
+      // For this small scale, deleting one by one is acceptable or just relying on manual cleanup.
+      // However, to be safe and simple, we will just warn the user or provide a simple implementation.
+      // Since client-side delete of all docs is heavy, we'll just console log for now or implement a simple loop if requested.
+      // Actually, let's implement a simple loop for the user's convenience since they have < 100 messages.
+      const q = query(collection(db, "messages"));
+      const snapshot = await getDocs(q);
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      alert("Sohbet geçmişi temizlendi!");
+    } catch (e) {
+      console.error("Error clearing chat: ", e);
+      alert("Sohbet temizlenirken hata oluştu.");
     }
   };
 
@@ -159,6 +203,10 @@ function App() {
           <div className="flex items-center gap-2 text-rose-500">
             <Heart className="w-6 h-6 fill-current animate-pulse" />
             <span className="font-bold text-xl tracking-tight">Bizim Hikayemiz</span>
+            {/* DEBUG OVERLAY */}
+            <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4">
+              Debug: {currentUser || 'NULL'} ({userType})
+            </div>
           </div>
 
           {userType === 'couple' && (
@@ -218,6 +266,7 @@ function App() {
         onBucketListChange={setBucketList}
         currentTimeCapsule={timeCapsule}
         onTimeCapsuleChange={setTimeCapsule}
+        onClearChat={handleClearChat}
       />
 
       <footer className="py-8 text-center text-slate-500 text-sm">
