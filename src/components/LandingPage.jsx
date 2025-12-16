@@ -9,9 +9,12 @@ const LandingPage = ({ onLogin }) => {
 
     const handleCoupleLogin = (e) => {
         e.preventDefault();
+        console.log("Login attempt with password:", password);
         if (password === "1071") {
+            console.log("Logging in as HER");
             onLogin('couple', 'her');
         } else if (password === "2021") {
+            console.log("Logging in as HIM");
             onLogin('couple', 'him');
         } else {
             setError(true);
