@@ -20,21 +20,20 @@ const DEFAULT_PLAYLIST = [
 ];
 
 const DEFAULT_REASONS = [
-  "Gülüşünle dünyamı aydınlatman",
-  "Her sabah seninle uyanma hayali",
-  "Beni olduğum gibi sevmen",
-  "Zor zamanlarımda yanımda olman",
-  "Birlikte kurduğumuz hayaller",
-  "Sesini duyduğumda hissettiğim mutluluk",
+  "Çünkü gülüşün yanımdayken içimi sakinleştiriyor.",
+  "Dünyanın sesi biraz kısılıyor.",
+  "Çünkü yanında mutlu olmaya çaba harcamıyorum.",
+  "Çünkü karakterine hayranım. Sadece bana değil, hayata nasıl davrandığını seviyorum.",
+  "Çünkü seni tanıdıkça biten bir merak değil, artan bir bağ hissediyorum.",
+  "Çünkü seninle konuşmak sessizlik kadar rahat, kahkaha kadar canlı.",
 ];
 
 const DEFAULT_BUCKET_LIST = [
-  { id: 1, text: "Kapadokya'da balon turu yapmak", completed: false },
-  { id: 2, text: "Birlikte yemek kursuna gitmek", completed: false },
-  { id: 3, text: "Kuzey Işıklarını izlemek", completed: false },
-  { id: 4, text: "Kendi evimizi dekore etmek", completed: false },
-  { id: 5, text: "Paris'te Eyfel Kulesi önünde fotoğraf çekilmek", completed: false },
-  { id: 6, text: "Bir barınaktan köpek sahiplenmek", completed: false },
+  { id: 1, text: "Seninle, her köşesini kendi zevkimize göre döşediğimiz, kapısından girdiğimizde sadece 'huzur' ve 'biz' kokan o evde yaşlanmak.", completed: false },
+  { id: 2, text: "Yıllar sonra saçlarımıza aklar düştüğünde bile, şu anki gibi el ele sahilde yürümek ve 'Ne güzel yaşadık be!' diyebilmek.", completed: false },
+  { id: 3, text: "Pazar kahvaltılarının saatlerce sürdüğü, demli çay eşliğinde hayattan konuştuğumuz, acele etmediğimiz o geniş sofraları kurmak.", completed: false },
+  { id: 4, text: "Türkiye'nin görmediğimiz her şehrini, her antik kentini karış karış seninle gezmek; her şehirde yeni bir anı biriktirmek.", completed: false },
+  { id: 5, text: "Hasta olduğunda sana çorba yapan, yorulduğunda kahveni getiren kişinin ömrümün sonuna kadar ben olması.", completed: false },
 ];
 
 const DEFAULT_TIME_CAPSULE = {
@@ -230,7 +229,7 @@ function App() {
           </p>
         </section>
 
-        <LiveCounter startDate="2023-01-01" />
+        <LiveCounter startDate="2022-09-14" />
 
         <Timeline />
 
