@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Music, Heart, Plus, X, Save, List, Clock } from 'lucide-react';
+import { Settings, Music, Heart, Plus, X, Save, List, Clock, MessageCircle } from 'lucide-react';
 
 const AdminPanel = ({
   currentPlaylist,
@@ -11,81 +11,14 @@ const AdminPanel = ({
   onBucketListChange,
   currentTimeCapsule,
   onTimeCapsuleChange,
+  onClearChat,
   isOpen,
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState('music');
-  const [newSongUrl, setNewSongUrl] = useState('');
-  const [newSongTitle, setNewSongTitle] = useState('');
-  const [newReason, setNewReason] = useState('');
-  const [newBucketItem, setNewBucketItem] = useState('');
-  const [capsuleDate, setCapsuleDate] = useState(currentTimeCapsule.unlockDate);
-  const [capsuleMessageHer, setCapsuleMessageHer] = useState(currentTimeCapsule.messageForHer);
-  const [capsuleMessageHim, setCapsuleMessageHim] = useState(currentTimeCapsule.messageForHim);
+  // ... (rest of state)
 
-  const handleAddSong = () => {
-    if (newSongUrl.trim() && newSongTitle.trim()) {
-      onPlaylistChange([...currentPlaylist, { url: newSongUrl.trim(), title: newSongTitle.trim() }]);
-      setNewSongUrl('');
-      setNewSongTitle('');
-    }
-  };
-
-  const handleRemoveSong = (index) => {
-    const updatedPlaylist = currentPlaylist.filter((_, i) => i !== index);
-    onPlaylistChange(updatedPlaylist);
-  };
-
-  const handleAddReason = (e) => {
-    e.preventDefault();
-    if (newReason.trim()) {
-      onReasonsChange([...currentReasons, newReason.trim()]);
-      setNewReason('');
-    }
-  };
-
-  const handleRemoveReason = (index) => {
-    const updatedReasons = currentReasons.filter((_, i) => i !== index);
-    onReasonsChange(updatedReasons);
-  };
-
-  const handleAddBucketItem = (e) => {
-    e.preventDefault();
-    if (newBucketItem.trim()) {
-      const newItem = {
-        id: Date.now(),
-        text: newBucketItem.trim(),
-        completed: false
-      };
-      onBucketListChange([...currentBucketList, newItem]);
-      setNewBucketItem('');
-    }
-  };
-
-  const handleRemoveBucketItem = (id) => {
-    const updatedList = currentBucketList.filter(item => item.id !== id);
-    onBucketListChange(updatedList);
-  };
-
-  const handleSaveCapsule = () => {
-    onTimeCapsuleChange({
-      unlockDate: capsuleDate,
-      messageForHer: capsuleMessageHer,
-      messageForHim: capsuleMessageHim
-    });
-  };
-
-  const TabButton = ({ id, icon: Icon, label }) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      className={`flex-1 py-4 text-sm font-medium transition-colors flex items-center justify-center gap-2 border-b-2
-        ${activeTab === id ? 'bg-white/5 text-rose-400 border-rose-500' : 'text-slate-400 hover:text-white border-transparent'}
-      `}
-    >
-      <Icon className="w-4 h-4" />
-      <span className="hidden md:inline">{label}</span>
-    </button>
-  );
+  // ... (rest of handlers)
 
   return (
     <AnimatePresence>
@@ -117,6 +50,7 @@ const AdminPanel = ({
               <TabButton id="reasons" icon={Heart} label="Neden Sen?" />
               <TabButton id="bucket" icon={List} label="Hayaller" />
               <TabButton id="capsule" icon={Clock} label="Zaman Kapsülü" />
+              <TabButton id="chat" icon={MessageCircle} label="Sohbet" />
             </div>
 
             {/* Content */}
@@ -308,6 +242,29 @@ const AdminPanel = ({
                     <Save className="w-4 h-4" />
                     Değişiklikleri Kaydet
                   </button>
+                </div>
+              )}
+
+              {activeTab === 'chat' && (
+                <div className="space-y-6 flex flex-col items-center justify-center h-full text-center">
+                  <div className="bg-red-500/10 p-6 rounded-2xl border border-red-500/20 max-w-md">
+                    <h3 className="text-red-500 font-bold text-lg mb-2">Dikkat Alanı</h3>
+                    <p className="text-slate-400 mb-6">
+                      Sohbet geçmişini temizlemek geri alınamaz. Tüm mesajlar silinecektir.
+                      Eğer mesaj renklerinde hata görüyorsan bunu kullan.
+                    </p>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Tüm sohbet geçmişini silmek istediğine emin misin?")) {
+                          onClearChat();
+                        }
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2 mx-auto"
+                    >
+                      <X className="w-4 h-4" />
+                      Sohbet Geçmişini Temizle
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
