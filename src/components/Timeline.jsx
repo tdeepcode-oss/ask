@@ -2,27 +2,74 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Heart } from 'lucide-react';
 
-const timelineData = [
-    {
-        date: '14 Şubat 2023',
-        title: 'İlk Tanışma',
-        description: 'Hayatımın değiştiği o büyülü gün. Göz göze geldiğimiz ilk an.',
-        icon: Calendar,
-    },
-    {
-        date: '1 Mart 2023',
-        title: 'İlk Buluşma',
-        description: 'O kahve dükkanında saatlerce konuştuğumuz, zamanın nasıl geçtiğini anlamadığımız gün.',
-        icon: Heart,
-    },
-    {
-        date: '15 Haziran 2023',
-        title: 'İlk Tatilimiz',
-        description: 'Denizin mavisi, güneşin sıcaklığı ve senin gülüşün. Unutulmaz anılar.',
-        icon: Calendar,
-    },
-    // Add more milestones here
-];
+const generateTimeline = () => {
+    const events = [
+        {
+            date: '12 Mart 2022',
+            title: 'Tanışma Tarihi',
+            description: 'Hikayemizin başladığı, yollarımızın kesiştiği o ilk gün.',
+            icon: Calendar,
+        },
+        {
+            date: '14 Eylül 2022',
+            title: 'İlk "Seni Seviyorum"',
+            description: 'Kalbimden dökülen o iki kelimenin, bizim sonsuzluğumuzun başlangıcı olduğu gün.',
+            icon: Heart,
+        },
+        {
+            date: '7 Aralık 2022',
+            title: 'Seni İlk Gördüğüm Gün',
+            description: 'Gözlerinin içine ilk baktığım ve orada kaybolduğum o an.',
+            icon: Calendar,
+        }
+    ];
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const startYear = 2023; // Anniversaries start from 2023
+
+    for (let year = startYear; year <= currentYear + 1; year++) {
+        // Tanışma Yıl Dönümü (12 Mart)
+        const meetingAnniversary = new Date(year, 2, 12); // Month is 0-indexed (2 = March)
+        if (meetingAnniversary <= today || year === currentYear) {
+            events.push({
+                date: `12 Mart ${year}`,
+                title: `${year - 2022}. Tanışma Yıl Dönümü`,
+                description: 'Seninle geçen her yıl, ömrüme ömür katıyor. İyi ki varsın.',
+                icon: Calendar,
+            });
+        }
+
+        // İlişki Yıl Dönümü (14 Eylül)
+        const relationshipAnniversary = new Date(year, 8, 14); // 8 = September
+        if (relationshipAnniversary <= today || year === currentYear) {
+            events.push({
+                date: `14 Eylül ${year}`,
+                title: `${year - 2022}. İlişki Yıl Dönümü`,
+                description: 'Aşkımızın büyüdüğü, kök saldığı bir yıl daha. Seni çok seviyorum.',
+                icon: Heart,
+            });
+        }
+    }
+
+    return events.sort((a, b) => {
+        // Helper to parse Turkish dates loosely for sorting
+        const months = {
+            'Ocak': 0, 'Şubat': 1, 'Mart': 2, 'Nisan': 3, 'Mayıs': 4, 'Haziran': 5,
+            'Temmuz': 6, 'Ağustos': 7, 'Eylül': 8, 'Ekim': 9, 'Kasım': 10, 'Aralık': 11
+        };
+        const parseDate = (dateStr) => {
+            const parts = dateStr.split(' ');
+            const day = parseInt(parts[0]);
+            const month = months[parts[1]];
+            const year = parseInt(parts[2]);
+            return new Date(year, month, day);
+        };
+        return parseDate(a.date) - parseDate(b.date);
+    });
+};
+
+const timelineData = generateTimeline();
 
 const TimelineItem = ({ item, index }) => {
     const isEven = index % 2 === 0;
