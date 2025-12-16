@@ -16,9 +16,77 @@ const AdminPanel = ({
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState('music');
-  // ... (rest of state)
+  const [newSongUrl, setNewSongUrl] = useState('');
+  const [newSongTitle, setNewSongTitle] = useState('');
+  const [newReason, setNewReason] = useState('');
+  const [newBucketItem, setNewBucketItem] = useState('');
+  const [capsuleDate, setCapsuleDate] = useState(currentTimeCapsule.unlockDate);
+  const [capsuleMessageHer, setCapsuleMessageHer] = useState(currentTimeCapsule.messageForHer);
+  const [capsuleMessageHim, setCapsuleMessageHim] = useState(currentTimeCapsule.messageForHim);
 
-  // ... (rest of handlers)
+  const handleAddSong = () => {
+    if (newSongUrl.trim() && newSongTitle.trim()) {
+      onPlaylistChange([...currentPlaylist, { url: newSongUrl.trim(), title: newSongTitle.trim() }]);
+      setNewSongUrl('');
+      setNewSongTitle('');
+    }
+  };
+
+  const handleRemoveSong = (index) => {
+    const updatedPlaylist = currentPlaylist.filter((_, i) => i !== index);
+    onPlaylistChange(updatedPlaylist);
+  };
+
+  const handleAddReason = (e) => {
+    e.preventDefault();
+    if (newReason.trim()) {
+      onReasonsChange([...currentReasons, newReason.trim()]);
+      setNewReason('');
+    }
+  };
+
+  const handleRemoveReason = (index) => {
+    const updatedReasons = currentReasons.filter((_, i) => i !== index);
+    onReasonsChange(updatedReasons);
+  };
+
+  const handleAddBucketItem = (e) => {
+    e.preventDefault();
+    if (newBucketItem.trim()) {
+      const newItem = {
+        id: Date.now(),
+        text: newBucketItem.trim(),
+        completed: false
+      };
+      onBucketListChange([...currentBucketList, newItem]);
+      setNewBucketItem('');
+    }
+  };
+
+  const handleRemoveBucketItem = (id) => {
+    const updatedList = currentBucketList.filter(item => item.id !== id);
+    onBucketListChange(updatedList);
+  };
+
+  const handleSaveCapsule = () => {
+    onTimeCapsuleChange({
+      unlockDate: capsuleDate,
+      messageForHer: capsuleMessageHer,
+      messageForHim: capsuleMessageHim
+    });
+  };
+
+  const TabButton = ({ id, icon: Icon, label }) => (
+    <button
+      onClick={() => setActiveTab(id)}
+      className={`flex-1 py-4 text-sm font-medium transition-colors flex items-center justify-center gap-2 border-b-2
+        ${activeTab === id ? 'bg-white/5 text-rose-400 border-rose-500' : 'text-slate-400 hover:text-white border-transparent'}
+      `}
+    >
+      <Icon className="w-4 h-4" />
+      <span className="hidden md:inline">{label}</span>
+    </button>
+  );
 
   return (
     <AnimatePresence>
