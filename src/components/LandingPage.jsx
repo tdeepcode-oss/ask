@@ -7,13 +7,12 @@ const LandingPage = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
 
-    // Hardcoded password for now: "2023" (Year of meeting)
-    const CORRECT_PASSWORD = "2023";
-
     const handleCoupleLogin = (e) => {
         e.preventDefault();
-        if (password === CORRECT_PASSWORD) {
-            onLogin('couple');
+        if (password === "1071") {
+            onLogin('couple', 'her');
+        } else if (password === "2021") {
+            onLogin('couple', 'him');
         } else {
             setError(true);
             setTimeout(() => setError(false), 1000);
