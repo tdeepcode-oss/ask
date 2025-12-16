@@ -73,9 +73,10 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
                                     >
                                         <div className={`
                       max-w-[80%] rounded-2xl px-4 py-2 text-sm relative
-                      ${msg.sender === currentUser
-                                                ? 'bg-rose-600/20 text-rose-100 rounded-br-none border border-rose-500/20'
-                                                : 'bg-slate-800/50 text-slate-300 rounded-bl-none border border-white/10'
+                      ${msg.sender === currentUser ? 'rounded-br-none' : 'rounded-bl-none'}
+                      ${msg.sender === 'him'
+                                                ? 'bg-blue-600/20 text-blue-100 border border-blue-500/20'
+                                                : 'bg-rose-600/20 text-rose-100 border border-rose-500/20'
                                             }
                     `}>
                                             <p>{msg.text}</p>
