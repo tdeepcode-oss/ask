@@ -57,8 +57,14 @@ Daima senin...`
 
 function App() {
   const [userType, setUserType] = useState(null); // 'guest' | 'couple' | null
+  const [currentUser, setCurrentUser] = useState(null); // 'him' | 'her' | null
   const [showAdmin, setShowAdmin] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
+
+  const handleLogin = (type, user = null) => {
+    setUserType(type);
+    if (user) setCurrentUser(user);
+  };
 
   // Firestore Real-time Listener
   useEffect(() => {
@@ -198,7 +204,7 @@ function App() {
       <MusicPlayer playlist={playlist} />
 
       {userType === 'couple' && (
-        <Chat messages={chatMessages} onSendMessage={handleSendMessage} />
+        <Chat messages={chatMessages} onSendMessage={handleSendMessage} currentUser={currentUser} />
       )}
 
       <AdminPanel
