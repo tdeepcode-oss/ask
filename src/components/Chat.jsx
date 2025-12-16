@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Chat = ({ messages = [], onSendMessage }) => {
+const Chat = ({ messages = [], onSendMessage, currentUser }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
-    const [sender, setSender] = useState('him'); // 'him' | 'her'
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -23,7 +22,7 @@ const Chat = ({ messages = [], onSendMessage }) => {
         if (newMessage.trim()) {
             onSendMessage({
                 text: newMessage.trim(),
-                sender: sender,
+                sender: currentUser,
                 timestamp: new Date().toISOString()
             });
             setNewMessage('');
@@ -70,13 +69,13 @@ const Chat = ({ messages = [], onSendMessage }) => {
                                 messages.map((msg) => (
                                     <div
                                         key={msg.id}
-                                        className={`flex flex-col ${msg.sender === sender ? 'items-end' : 'items-start'}`}
+                                        className={`flex flex-col ${msg.sender === currentUser ? 'items-end' : 'items-start'}`}
                                     >
                                         <div className={`
                       max-w-[80%] rounded-2xl px-4 py-2 text-sm relative
-                      ${msg.sender === 'him'
-                                                ? 'bg-blue-600/20 text-blue-100 rounded-br-none border border-blue-500/20'
-                                                : 'bg-rose-600/20 text-rose-100 rounded-bl-none border border-rose-500/20'
+                      ${msg.sender === currentUser
+                                                ? 'bg-rose-600/20 text-rose-100 rounded-br-none border border-rose-500/20'
+                                                : 'bg-slate-800/50 text-slate-300 rounded-bl-none border border-white/10'
                                             }
                     `}>
                                             <p>{msg.text}</p>
@@ -95,34 +94,6 @@ const Chat = ({ messages = [], onSendMessage }) => {
 
                         {/* Input Area */}
                         <div className="p-4 border-t border-white/10 bg-slate-900/50">
-                            {/* Sender Toggle */}
-                            <div className="flex gap-2 mb-3 bg-slate-950 p-1 rounded-lg border border-white/5">
-                                <button
-                                    onClick={() => setSender('him')}
-                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-medium rounded-md transition-all
-                    ${sender === 'him'
-                                            ? 'bg-blue-500/20 text-blue-400 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-300'
-                                        }
-                  `}
-                                >
-                                    <User className="w-3 h-3" />
-                                    Ben (Erkek)
-                                </button>
-                                <button
-                                    onClick={() => setSender('her')}
-                                    className={`flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-medium rounded-md transition-all
-                    ${sender === 'her'
-                                            ? 'bg-rose-500/20 text-rose-400 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-300'
-                                        }
-                  `}
-                                >
-                                    <User className="w-3 h-3" />
-                                    Ben (Kadın)
-                                </button>
-                            </div>
-
                             <form onSubmit={handleSend} className="flex gap-2">
                                 <input
                                     type="text"
