@@ -62,12 +62,8 @@ function App() {
   const [chatMessages, setChatMessages] = useState([]);
 
   const handleLogin = (type, user = null) => {
-    console.log("handleLogin called with:", type, user);
     setUserType(type);
-    if (user) {
-      console.log("Setting currentUser to:", user);
-      setCurrentUser(user);
-    }
+    if (user) setCurrentUser(user);
   };
 
   // Firestore Real-time Listener
@@ -153,7 +149,7 @@ function App() {
   }, [timeCapsule]);
 
   if (!userType) {
-    return <LandingPage onLogin={setUserType} />;
+    return <LandingPage onLogin={handleLogin} />;
   }
 
   return (
