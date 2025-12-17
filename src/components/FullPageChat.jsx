@@ -49,7 +49,7 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
     }, {});
 
     return (
-        <div className="flex h-[100dvh] bg-slate-950 overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col md:static md:h-[100dvh]">
             {/* Sidebar - Contact List */}
             <div className={`${selectedUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-white/10 bg-slate-900/50 flex-col`}>
                 <div className="p-4 border-b border-white/10">
@@ -166,7 +166,10 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
                 </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-slate-900/50 border-t border-white/10 backdrop-blur-md pb-safe-area-bottom">
+                <div
+                    className="p-4 bg-slate-900/50 border-t border-white/10 backdrop-blur-md"
+                    style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+                >
                     <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
                         <button type="button" className="p-2 md:p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors">
                             <Paperclip className="w-5 h-5" />
