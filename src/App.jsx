@@ -85,7 +85,34 @@ function App() {
           ...doc.data()
         }));
         setChatMessages(msgs);
+
+        // Notification Logic
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            const data = change.doc.data();
+            // Only notify if:
+            // 1. It's a new message (not from initial load - though Firestore initial load adds them as 'added', 
+            //    we can check if the timestamp is very recent or rely on the fact that we only want to notify for *incoming* messages).
+            //    Actually, for initial load, we might get a burst. 
+            //    Better check: Is the timestamp very recent (last 5 seconds)?
+            // 2. Sender is NOT the current user.
+            const isRecent = new Date(data.timestamp) > new Date(Date.now() - 10000); // 10 seconds window
+            if (data.sender !== currentUser && isRecent) {
+              if (Notification.permission === "granted") {
+                new Notification("Yeni Mesajın Var! 💌", {
+                  body: data.text,
+                  icon: "/pwa-192x192.png" // Optional: Add an icon if available, or remove
+                });
+              }
+            }
+          }
+        });
       });
+
+      // Request Notification Permission
+      if (Notification.permission === "default") {
+        Notification.requestPermission();
+      }
 
       // 2. Background Cleanup Task (Fire and Forget)
       const cleanupOldMessages = async () => {
