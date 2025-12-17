@@ -3,9 +3,11 @@ import { MessageCircle, X, Send, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Chat = ({ messages = [], onSendMessage, currentUser }) => {
+    console.log("Chat Rendered. CurrentUser:", currentUser);
     const [isOpen, setIsOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
+    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,6 +28,17 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
                 timestamp: new Date().toISOString()
             });
             setNewMessage('');
+        }
+    };
+
+    const requestNotificationPermission = async () => {
+        const permission = await Notification.requestPermission();
+        setNotificationPermission(permission);
+        if (permission === 'granted') {
+            new Notification("Bildirimler Aktif! 🎉", {
+                body: "Artık yeni mesaj gelince haber vereceğim.",
+                icon: "/pwa-192x192.png"
+            });
         }
     };
 
@@ -50,6 +63,14 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
                                 <MessageCircle className="w-5 h-5 text-rose-500" />
                                 <h3 className="font-bold text-white">Bizim Sohbetimiz</h3>
                             </div>
+                            {notificationPermission !== 'granted' && (
+                                <button
+                                    onClick={requestNotificationPermission}
+                                    className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded hover:bg-rose-500/30 transition-colors"
+                                >
+                                    Bildirimleri Aç 🔔
+                                </button>
+                            )}
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="p-1 hover:bg-white/10 rounded-full transition-colors"
@@ -76,7 +97,9 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
                       ${msg.sender === currentUser ? 'rounded-br-none' : 'rounded-bl-none'}
                       ${msg.sender === 'him'
                                                 ? 'bg-blue-600/20 text-blue-100 border border-blue-500/20'
-                                                : 'bg-rose-600/20 text-rose-100 border border-rose-500/20'
+                                                : msg.sender === 'her'
+                                                    ? 'bg-rose-600/20 text-rose-100 border border-rose-500/20'
+                                                    : 'bg-slate-800/50 text-slate-300 border border-white/10' // Default/Unknown
                                             }
                     `}>
                                             <p>{msg.text}</p>
