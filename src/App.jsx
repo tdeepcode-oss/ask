@@ -9,6 +9,7 @@ import MusicPlayer from './components/MusicPlayer';
 import LandingPage from './components/LandingPage';
 import AdminPanel from './components/AdminPanel';
 import Chat from './components/Chat';
+import Recipes from './components/Recipes';
 import { db } from './firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where } from 'firebase/firestore';
 
@@ -59,6 +60,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null); // 'him' | 'her' | null
   const [showAdmin, setShowAdmin] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'recipes'
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   const handleLogin = (type, user = null) => {
     setUserType(type);
@@ -87,35 +90,37 @@ function App() {
         setChatMessages(msgs);
 
         // Notification Logic
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            const data = change.doc.data();
-            // Only notify if:
-            // 1. It's a new message (not from initial load - though Firestore initial load adds them as 'added', 
-            //    we can check if the timestamp is very recent or rely on the fact that we only want to notify for *incoming* messages).
-            //    Actually, for initial load, we might get a burst. 
-            //    Better check: Is the timestamp very recent (last 5 seconds)?
-            // 2. Sender is NOT the current user.
-            const isRecent = new Date(data.timestamp) > new Date(Date.now() - 60000); // 60 seconds window
-            if (data.sender !== currentUser && isRecent) {
-              // Play Sound
-              const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-              audio.volume = 1.0; // Max volume
-              audio.play().catch(e => console.error("Audio play failed:", e));
+        if (notificationsEnabled) {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              const data = change.doc.data();
+              // Only notify if:
+              // 1. It's a new message (not from initial load - though Firestore initial load adds them as 'added', 
+              //    we can check if the timestamp is very recent or rely on the fact that we only want to notify for *incoming* messages).
+              //    Actually, for initial load, we might get a burst. 
+              //    Better check: Is the timestamp very recent (last 5 seconds)?
+              // 2. Sender is NOT the current user.
+              const isRecent = new Date(data.timestamp) > new Date(Date.now() - 60000); // 60 seconds window
+              if (data.sender !== currentUser && isRecent) {
+                // Play Sound
+                const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+                audio.volume = 1.0; // Max volume
+                audio.play().catch(e => console.error("Audio play failed:", e));
 
-              if (Notification.permission === "granted") {
-                new Notification("Yeni Mesajın Var! 💌", {
-                  body: data.text,
-                  icon: "/pwa-192x192.png" // Optional: Add an icon if available, or remove
-                });
+                if (Notification.permission === "granted") {
+                  new Notification("Yeni Mesajın Var! 💌", {
+                    body: data.text,
+                    icon: "/pwa-192x192.png" // Optional: Add an icon if available, or remove
+                  });
+                }
               }
             }
-          }
-        });
+          });
+        }
       });
 
-      // Request Notification Permission
-      if (Notification.permission === "default") {
+      // Request Notification Permission if enabled (though we'll handle this on toggle click mostly)
+      if (notificationsEnabled && Notification.permission === "default") {
         Notification.requestPermission();
       }
 
@@ -231,59 +236,97 @@ function App() {
     <div className="min-h-screen bg-slate-950 text-white selection:bg-rose-500/30">
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-rose-500">
+          <div
+            className="flex items-center gap-2 text-rose-500 cursor-pointer"
+            onClick={() => setCurrentView('home')}
+          >
             <Heart className="w-6 h-6 fill-current animate-pulse" />
-            <span className="font-bold text-xl tracking-tight">Bizim Hikayemiz</span>
+            <span className="font-bold text-xl tracking-tight hidden md:inline">Bizim Hikayemiz</span>
             {/* DEBUG OVERLAY */}
-            <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4">
+            <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4 hidden md:block">
               Debug: {currentUser || 'NULL'} ({userType})
             </div>
           </div>
 
-          {userType === 'couple' && (
-            <button
-              onClick={() => setShowAdmin(true)}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
-            >
-              <Settings className="w-5 h-5" />
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            <nav className="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
+              <button
+                onClick={() => setCurrentView('home')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'home'
+                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
+              >
+                Ana Sayfa
+              </button>
+              <button
+                onClick={() => setCurrentView('recipes')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'recipes'
+                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
+              >
+                Tarifler
+              </button>
+            </nav>
+
+            {userType === 'couple' && (
+              <button
+                onClick={() => setShowAdmin(true)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 pt-24 pb-12 space-y-20">
-        <section className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
-          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-rose-400 to-purple-500 text-transparent bg-clip-text">
-            Sonsuza Dek
-          </h1>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Seninle geçen her saniye, ömrümün en güzel anı.
-          </p>
-        </section>
+        {currentView === 'home' ? (
+          <>
+            <section className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-rose-400 to-purple-500 text-transparent bg-clip-text">
+                Sonsuza Dek
+              </h1>
+              <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+                Seninle geçen her saniye, ömrümün en güzel anı.
+              </p>
+            </section>
 
-        <LiveCounter startDate="2022-09-14" />
+            <LiveCounter startDate="2022-09-14" />
 
-        <Timeline />
+            <Timeline />
 
-        <WhyYouList reasons={reasons} />
+            <WhyYouList reasons={reasons} />
 
-        <BucketList items={bucketList} onToggle={(id) => {
-          setBucketList(bucketList.map(item =>
-            item.id === id ? { ...item, completed: !item.completed } : item
-          ));
-        }} />
+            <BucketList items={bucketList} onToggle={(id) => {
+              setBucketList(bucketList.map(item =>
+                item.id === id ? { ...item, completed: !item.completed } : item
+              ));
+            }} />
 
-        <TimeCapsule
-          unlockDate={timeCapsule.unlockDate}
-          messageForHer={timeCapsule.messageForHer}
-          messageForHim={timeCapsule.messageForHim}
-        />
+            <TimeCapsule
+              unlockDate={timeCapsule.unlockDate}
+              messageForHer={timeCapsule.messageForHer}
+              messageForHim={timeCapsule.messageForHim}
+            />
+          </>
+        ) : (
+          <Recipes userType={userType} />
+        )}
       </main>
 
       <MusicPlayer playlist={playlist} />
 
       {userType === 'couple' && (
-        <Chat messages={chatMessages} onSendMessage={handleSendMessage} currentUser={currentUser} />
+        <Chat
+          messages={chatMessages}
+          onSendMessage={handleSendMessage}
+          currentUser={currentUser}
+          notificationsEnabled={notificationsEnabled}
+          onToggleNotifications={() => setNotificationsEnabled(!notificationsEnabled)}
+        />
       )}
 
       <AdminPanel
