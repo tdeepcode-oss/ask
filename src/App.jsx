@@ -303,3 +303,9 @@ function App() {
       <footer className="py-8 text-center text-slate-500 text-sm">
         <p>Seni Seviyorum &hearts;</p>
       </footer>
+    </div>
+  );
+}
+
+// End of App component
+export default App;
