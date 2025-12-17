@@ -96,8 +96,13 @@ function App() {
             //    Actually, for initial load, we might get a burst. 
             //    Better check: Is the timestamp very recent (last 5 seconds)?
             // 2. Sender is NOT the current user.
-            const isRecent = new Date(data.timestamp) > new Date(Date.now() - 10000); // 10 seconds window
+            const isRecent = new Date(data.timestamp) > new Date(Date.now() - 60000); // 60 seconds window
             if (data.sender !== currentUser && isRecent) {
+              // Play Sound
+              const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+              audio.volume = 1.0; // Max volume
+              audio.play().catch(e => console.error("Audio play failed:", e));
+
               if (Notification.permission === "granted") {
                 new Notification("Yeni Mesajın Var! 💌", {
                   body: data.text,
@@ -298,8 +303,3 @@ function App() {
       <footer className="py-8 text-center text-slate-500 text-sm">
         <p>Seni Seviyorum &hearts;</p>
       </footer>
-    </div>
-  );
-}
-
-export default App;
