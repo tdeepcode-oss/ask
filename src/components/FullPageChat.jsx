@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => {
     const [newMessage, setNewMessage] = useState('');
-    const [selectedUser, setSelectedUser] = useState(currentUser === 'him' ? 'her' : 'him'); // Default to chatting with the other person
+    // On mobile, start with no user selected to show the list first
+    const [selectedUser, setSelectedUser] = useState(window.innerWidth > 768 ? (currentUser === 'him' ? 'her' : 'him') : null);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -48,9 +49,9 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
     }, {});
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-slate-950 overflow-hidden">
+        <div className="flex h-[calc(100dvh-64px)] bg-slate-950 overflow-hidden">
             {/* Sidebar - Contact List */}
-            <div className="w-80 border-r border-white/10 bg-slate-900/50 hidden md:flex flex-col">
+            <div className={`${selectedUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-white/10 bg-slate-900/50 flex-col`}>
                 <div className="p-4 border-b border-white/10">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -99,11 +100,11 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
             </div>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col bg-slate-950 relative">
+            <div className={`${!selectedUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-slate-950 relative`}>
                 {/* Chat Header */}
-                <div className="h-16 border-b border-white/10 bg-slate-900/50 backdrop-blur-md flex items-center justify-between px-6">
+                <div className="h-16 border-b border-white/10 bg-slate-900/50 backdrop-blur-md flex items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-4">
-                        <button onClick={onBack} className="md:hidden p-2 -ml-2 hover:bg-white/10 rounded-full text-slate-400">
+                        <button onClick={() => setSelectedUser(null)} className="md:hidden p-2 -ml-2 hover:bg-white/10 rounded-full text-slate-400">
                             <ArrowLeft className="w-5 h-5" />
                         </button>
                         <div className="relative">
@@ -151,8 +152,8 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
                                     className={`flex ${msg.sender === currentUser ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div className={`max-w-[70%] md:max-w-[60%] rounded-2xl px-5 py-3 shadow-md relative group ${msg.sender === currentUser
-                                            ? 'bg-rose-600 text-white rounded-br-none'
-                                            : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'
+                                        ? 'bg-rose-600 text-white rounded-br-none'
+                                        : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'
                                         }`}>
                                         <p className="leading-relaxed text-sm md:text-base">{msg.text}</p>
                                         <div className={`text-[10px] mt-1 flex items-center gap-1 ${msg.sender === currentUser ? 'text-rose-200/70 justify-end' : 'text-slate-500'
