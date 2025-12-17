@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Settings, MessageCircle } from 'lucide-react';
+import { Heart, Settings, MessageCircle, Home, BookOpen } from 'lucide-react';
 import LiveCounter from './components/LiveCounter';
 import Timeline from './components/Timeline';
 import WhyYouList from './components/WhyYouList';
@@ -229,7 +229,8 @@ function App() {
                   : 'text-slate-400 hover:text-white'
                   }`}
               >
-                Ana Sayfa
+                <Home className="w-4 h-4 md:hidden" />
+                <span className="hidden md:inline">Ana Sayfa</span>
               </button>
               <button
                 onClick={() => setCurrentView('recipes')}
@@ -238,7 +239,8 @@ function App() {
                   : 'text-slate-400 hover:text-white'
                   }`}
               >
-                Tarifler
+                <BookOpen className="w-4 h-4 md:hidden" />
+                <span className="hidden md:inline">Tarifler</span>
               </button>
               {userType === 'couple' && (
                 <button
@@ -266,7 +268,7 @@ function App() {
         </div>
       </header>
 
-      <main className={`container mx-auto px-4 pt-24 pb-12 space-y-20 ${currentView === 'chat' ? 'h-screen overflow-hidden pt-16 pb-0 px-0 max-w-none' : ''}`}>
+      <main className={`container mx-auto px-4 pt-24 pb-12 space-y-20 ${currentView === 'chat' ? 'h-[100dvh] overflow-hidden pt-16 pb-0 px-0 max-w-none' : ''}`}>
         {currentView === 'home' ? (
           <>
             <section className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
