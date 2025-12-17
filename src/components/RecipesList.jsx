@@ -1,3 +1,4 @@
+// Recipes List Component
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChefHat, Clock, Flame, Plus, X, Search, Utensils, Trash2, ChevronRight, BookOpen } from 'lucide-react';
@@ -105,8 +106,8 @@ const Recipes = ({ userType }) => {
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap ${activeCategory === cat.id
-                                    ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
-                                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
                                 }`}
                         >
                             <cat.icon className="w-4 h-4" />
