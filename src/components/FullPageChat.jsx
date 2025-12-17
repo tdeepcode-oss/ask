@@ -16,6 +16,28 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
         scrollToBottom();
     }, [messages]);
 
+    // Dynamic Viewport Height Hook
+    const [viewportHeight, setViewportHeight] = useState('100dvh');
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (window.visualViewport) {
+                setViewportHeight(`${window.visualViewport.height}px`);
+            } else {
+                setViewportHeight(`${window.innerHeight}px`);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', updateHeight);
+        window.addEventListener('resize', updateHeight);
+        updateHeight();
+
+        return () => {
+            window.visualViewport?.removeEventListener('resize', updateHeight);
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, []);
+
     const handleSend = (e) => {
         e.preventDefault();
         if (newMessage.trim()) {
@@ -49,7 +71,10 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
     }, {});
 
     return (
-        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col md:static md:h-[100dvh]">
+        <div
+            className="fixed inset-0 z-50 bg-slate-950 flex flex-col md:static"
+            style={{ height: viewportHeight }}
+        >
             {/* Sidebar - Contact List */}
             <div className={`${selectedUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-white/10 bg-slate-900/50 flex-col`}>
                 <div className="p-4 border-b border-white/10">
