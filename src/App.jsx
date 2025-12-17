@@ -62,6 +62,11 @@ function App() {
   const [chatMessages, setChatMessages] = useState([]);
   const [currentView, setCurrentView] = useState('home'); // 'home' | 'recipes'
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const notificationsEnabledRef = React.useRef(notificationsEnabled);
+
+  useEffect(() => {
+    notificationsEnabledRef.current = notificationsEnabled;
+  }, [notificationsEnabled]);
 
   const handleLogin = (type, user = null) => {
     setUserType(type);
@@ -90,7 +95,7 @@ function App() {
         setChatMessages(msgs);
 
         // Notification Logic
-        if (notificationsEnabled) {
+        if (notificationsEnabledRef.current) {
           snapshot.docChanges().forEach((change) => {
             if (change.type === "added") {
               const data = change.doc.data();
