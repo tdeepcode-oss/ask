@@ -12,7 +12,7 @@ import Chat from './components/Chat';
 import FullPageChat from './components/FullPageChat';
 import Recipes from './components/RecipesList.jsx';
 import { db } from './firebase';
-import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where, doc, setDoc, updateDoc } from 'firebase/firestore';
 
 const DEFAULT_PLAYLIST = [
   {
@@ -98,13 +98,17 @@ function App() {
       // 2. Background Cleanup Task (Fire and Forget)
       const cleanupOldMessages = async () => {
         try {
+          const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
+          // Query messages that have been seen and are older than 10 minutes
           const oldMsgQuery = query(
             collection(db, "messages"),
-            where("timestamp", "<=", twentyFourHoursAgo)
+            where("seenAt", "<=", tenMinutesAgo)
           );
+
           const snapshot = await getDocs(oldMsgQuery);
           if (!snapshot.empty) {
-            console.log(`Cleaning up ${snapshot.size} old messages...`);
+            console.log(`Cleaning up ${snapshot.size} seen messages...`);
             const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
             await Promise.all(deletePromises);
             console.log("Cleanup complete.");
@@ -114,11 +118,32 @@ function App() {
         }
       };
 
-      cleanupOldMessages();
+      // Run cleanup every minute
+      const cleanupInterval = setInterval(cleanupOldMessages, 60 * 1000);
+      cleanupOldMessages(); // Run immediately on mount
 
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        clearInterval(cleanupInterval);
+      };
     }
   }, [userType]);
+
+  const handleMarkSeen = async (messageIds) => {
+    if (!messageIds.length) return;
+
+    const batchPromises = messageIds.map(id =>
+      updateDoc(doc(db, "messages", id), {
+        seenAt: new Date().toISOString()
+      })
+    );
+
+    try {
+      await Promise.all(batchPromises);
+    } catch (e) {
+      console.error("Error marking messages as seen:", e);
+    }
+  };
 
   const handleSendMessage = async (newMessage) => {
     try {
@@ -150,24 +175,30 @@ function App() {
     }
   };
 
-  const [playlist, setPlaylist] = useState(() => {
-    try {
-      const saved = localStorage.getItem('playlist');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          // Backward compatibility: convert strings to objects
-          return parsed.map(item =>
-            typeof item === 'string' ? { url: item, title: 'İsimsiz Şarkı' } : item
-          );
+  const [playlist, setPlaylist] = useState(DEFAULT_PLAYLIST);
+
+  // Playlist Sync Listener
+  useEffect(() => {
+    if (userType === 'couple') {
+      const unsub = onSnapshot(doc(db, "settings", "playlist"), (doc) => {
+        if (doc.exists()) {
+          setPlaylist(doc.data().items || DEFAULT_PLAYLIST);
         }
-      }
-      return DEFAULT_PLAYLIST;
-    } catch (e) {
-      console.error("Error parsing playlist:", e);
-      return DEFAULT_PLAYLIST;
+      });
+      return () => unsub();
     }
-  });
+  }, [userType]);
+
+  const handlePlaylistUpdate = async (newPlaylist) => {
+    // Optimistic update
+    setPlaylist(newPlaylist);
+    try {
+      await setDoc(doc(db, "settings", "playlist"), { items: newPlaylist });
+    } catch (e) {
+      console.error("Error updating playlist:", e);
+      alert("Çalma listesi güncellenemedi.");
+    }
+  };
 
   const [reasons, setReasons] = useState(() => {
     const saved = localStorage.getItem('reasons');
@@ -184,9 +215,7 @@ function App() {
     return saved ? JSON.parse(saved) : DEFAULT_TIME_CAPSULE;
   });
 
-  useEffect(() => {
-    localStorage.setItem('playlist', JSON.stringify(playlist));
-  }, [playlist]);
+
 
   useEffect(() => {
     localStorage.setItem('reasons', JSON.stringify(reasons));
@@ -306,6 +335,7 @@ function App() {
           <FullPageChat
             messages={chatMessages}
             onSendMessage={handleSendMessage}
+            onMarkSeen={handleMarkSeen}
             currentUser={currentUser}
             onBack={() => setCurrentView('home')}
           />
@@ -326,7 +356,7 @@ function App() {
         isOpen={showAdmin}
         onClose={() => setShowAdmin(false)}
         currentPlaylist={playlist}
-        onPlaylistChange={setPlaylist}
+        onPlaylistChange={handlePlaylistUpdate}
         currentReasons={reasons}
         onReasonsChange={setReasons}
         currentBucketList={bucketList}
