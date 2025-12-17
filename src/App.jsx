@@ -83,6 +83,7 @@ function App() {
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
+        console.log("Snapshot update:", snapshot.size, "docs");
         const msgs = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -214,7 +215,7 @@ function App() {
             <span className="font-bold text-xl tracking-tight hidden md:inline">Bizim Hikayemiz</span>
             {/* DEBUG OVERLAY */}
             <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4 hidden md:block">
-              Debug: {currentUser || 'NULL'} ({userType})
+              Debug: {currentUser || 'NULL'} ({userType}) - {new Date().toLocaleTimeString()}
             </div>
           </div>
 
