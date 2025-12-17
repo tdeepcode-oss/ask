@@ -151,11 +151,11 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
                                     key={msg.id}
                                     className={`flex ${msg.sender === currentUser ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`max-w-[70%] md:max-w-[60%] rounded-2xl px-5 py-3 shadow-md relative group ${msg.sender === currentUser
+                                    <div className={`max-w-[85%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-md relative group break-words ${msg.sender === currentUser
                                         ? 'bg-rose-600 text-white rounded-br-none'
                                         : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'
                                         }`}>
-                                        <p className="leading-relaxed text-sm md:text-base">{msg.text}</p>
+                                        <p className="leading-relaxed text-sm md:text-base break-words">{msg.text}</p>
                                         <div className={`text-[10px] mt-1 flex items-center gap-1 ${msg.sender === currentUser ? 'text-rose-200/70 justify-end' : 'text-slate-500'
                                             }`}>
                                             {formatTime(msg.timestamp)}
@@ -172,27 +172,27 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
                 </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-slate-900/50 border-t border-white/10 backdrop-blur-md">
-                    <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-4">
-                        <button type="button" className="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                <div className="p-4 bg-slate-900/50 border-t border-white/10 backdrop-blur-md pb-safe-area-bottom">
+                    <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
+                        <button type="button" className="p-2 md:p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors">
                             <Paperclip className="w-5 h-5" />
                         </button>
-                        <div className="flex-1 bg-slate-950 border border-white/10 rounded-2xl flex items-center px-4 py-2 focus-within:border-rose-500 transition-colors">
+                        <div className="flex-1 bg-slate-950 border border-white/10 rounded-2xl flex items-center px-3 md:px-4 py-2 focus-within:border-rose-500 transition-colors">
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 placeholder="Bir mesaj yazın..."
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 py-2 max-h-32"
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 py-2 max-h-32 text-sm md:text-base"
                             />
-                            <button type="button" className="p-2 text-slate-400 hover:text-white transition-colors">
+                            <button type="button" className="p-2 text-slate-400 hover:text-white transition-colors hidden md:block">
                                 <Smile className="w-5 h-5" />
                             </button>
                         </div>
                         <button
                             type="submit"
                             disabled={!newMessage.trim()}
-                            className="p-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full shadow-lg shadow-rose-500/20 transition-all hover:scale-105 active:scale-95"
+                            className="p-3 md:p-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full shadow-lg shadow-rose-500/20 transition-all hover:scale-105 active:scale-95"
                         >
                             <Send className="w-5 h-5" />
                         </button>
