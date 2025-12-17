@@ -158,7 +158,7 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
                                 {selectedUser === 'him' ? 'Sevgilim (Erkek)' : 'Sevgilim (Kadın)'}
                             </h2>
                             <span className="text-xs text-green-400 flex items-center gap-1">
-                                ● Çevrimiçi
+                                ● Çevrimiçi <span className="text-slate-600 text-[10px] ml-2">({viewportHeight})</span>
                             </span>
                         </div>
                     </div>
@@ -207,8 +207,8 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
 
                 {/* Input Area */}
                 <div
-                    className="p-4 bg-slate-900 border-t border-white/10 backdrop-blur-md"
-                    style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+                    className="p-4 bg-slate-900 border-t border-white/10 backdrop-blur-md pb-24 md:pb-4"
+                    style={{ paddingBottom: 'max(6rem, env(safe-area-inset-bottom))' }}
                 >
                     <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
                         <button type="button" className="p-2 md:p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors">
