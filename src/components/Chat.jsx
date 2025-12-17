@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, User } from 'lucide-react';
+import { MessageCircle, X, Send, Bell, BellOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Chat = ({ messages = [], onSendMessage, currentUser }) => {
-    console.log("Chat Rendered. CurrentUser:", currentUser);
+const Chat = ({ messages = [], onSendMessage, currentUser, notificationsEnabled, onToggleNotifications }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
-    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -25,20 +23,28 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
             onSendMessage({
                 text: newMessage.trim(),
                 sender: currentUser,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString() // Keep timestamp for existing message structure
             });
             setNewMessage('');
         }
     };
 
-    const requestNotificationPermission = async () => {
-        const permission = await Notification.requestPermission();
-        setNotificationPermission(permission);
-        if (permission === 'granted') {
-            new Notification("Bildirimler Aktif! 🎉", {
-                body: "Artık yeni mesaj gelince haber vereceğim.",
-                icon: "/pwa-192x192.png"
-            });
+    const handleToggleNotifications = async () => {
+        if (!notificationsEnabled) {
+            // Turning ON
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                onToggleNotifications();
+                new Notification("Bildirimler Açıldı! 🔔", {
+                    body: "Artık mesaj gelince sesli uyarı alacaksın.",
+                    icon: "/pwa-192x192.png"
+                });
+            } else {
+                alert("Bildirim izni verilmedi. Tarayıcı ayarlarından izin vermen gerekebilir.");
+            }
+        } else {
+            // Turning OFF
+            onToggleNotifications();
         }
     };
 
@@ -46,6 +52,8 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
         const date = new Date(isoString);
         return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     };
+
+    console.log("Chat Rendered. CurrentUser:", currentUser);
 
     return (
         <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end">
@@ -63,20 +71,24 @@ const Chat = ({ messages = [], onSendMessage, currentUser }) => {
                                 <MessageCircle className="w-5 h-5 text-rose-500" />
                                 <h3 className="font-bold text-white">Bizim Sohbetimiz</h3>
                             </div>
-                            {notificationPermission !== 'granted' && (
+                            <div className="flex items-center gap-2">
                                 <button
-                                    onClick={requestNotificationPermission}
-                                    className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded hover:bg-rose-500/30 transition-colors"
+                                    onClick={handleToggleNotifications}
+                                    className={`p-2 rounded-lg transition-colors ${notificationsEnabled
+                                            ? 'bg-rose-500/20 text-rose-400 hover:bg-rose-500/30'
+                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                        }`}
+                                    title={notificationsEnabled ? "Bildirimleri Kapat" : "Bildirimleri Aç"}
                                 >
-                                    Bildirimleri Aç 🔔
+                                    {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
                                 </button>
-                            )}
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="p-1 hover:bg-white/10 rounded-full transition-colors"
-                            >
-                                <X className="w-5 h-5 text-slate-400" />
-                            </button>
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                                >
+                                    <X className="w-5 h-5 text-slate-400" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages */}
