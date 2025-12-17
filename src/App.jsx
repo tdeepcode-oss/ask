@@ -9,7 +9,7 @@ import MusicPlayer from './components/MusicPlayer';
 import LandingPage from './components/LandingPage';
 import AdminPanel from './components/AdminPanel';
 import Chat from './components/Chat';
-import Recipes from './components/Recipes.jsx';
+import Recipes from './components/RecipesList.jsx';
 import { db } from './firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where } from 'firebase/firestore';
 
