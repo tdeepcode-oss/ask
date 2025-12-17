@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Settings } from 'lucide-react';
+import { Heart, Settings, MessageCircle } from 'lucide-react';
 import LiveCounter from './components/LiveCounter';
 import Timeline from './components/Timeline';
 import WhyYouList from './components/WhyYouList';
@@ -9,6 +9,7 @@ import MusicPlayer from './components/MusicPlayer';
 import LandingPage from './components/LandingPage';
 import AdminPanel from './components/AdminPanel';
 import Chat from './components/Chat';
+import FullPageChat from './components/FullPageChat';
 import Recipes from './components/RecipesList.jsx';
 import { db } from './firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, limit, getDocs, deleteDoc, where } from 'firebase/firestore';
@@ -77,7 +78,7 @@ function App() {
       // 1. Query only recent messages
       const q = query(
         collection(db, "messages"),
-        where("timestamp", ">", twentyFourHoursAgo),
+        // where("timestamp", ">", twentyFourHoursAgo), // Temporarily disabled for debugging
         orderBy("timestamp", "asc"),
         limit(100)
       );
@@ -239,6 +240,18 @@ function App() {
               >
                 Tarifler
               </button>
+              {userType === 'couple' && (
+                <button
+                  onClick={() => setCurrentView('chat')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${currentView === 'chat'
+                    ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                    : 'text-slate-400 hover:text-white'
+                    }`}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="hidden md:inline">Mesajlar</span>
+                </button>
+              )}
             </nav>
 
             {userType === 'couple' && (
@@ -253,7 +266,7 @@ function App() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 pt-24 pb-12 space-y-20">
+      <main className={`container mx-auto px-4 pt-24 pb-12 space-y-20 ${currentView === 'chat' ? 'h-screen overflow-hidden pt-16 pb-0 px-0 max-w-none' : ''}`}>
         {currentView === 'home' ? (
           <>
             <section className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
@@ -283,14 +296,21 @@ function App() {
               messageForHim={timeCapsule.messageForHim}
             />
           </>
-        ) : (
+        ) : currentView === 'recipes' ? (
           <Recipes userType={userType} />
+        ) : (
+          <FullPageChat
+            messages={chatMessages}
+            onSendMessage={handleSendMessage}
+            currentUser={currentUser}
+            onBack={() => setCurrentView('home')}
+          />
         )}
       </main>
 
       <MusicPlayer playlist={playlist} />
 
-      {userType === 'couple' && (
+      {userType === 'couple' && currentView !== 'chat' && (
         <Chat
           messages={chatMessages}
           onSendMessage={handleSendMessage}
