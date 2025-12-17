@@ -49,7 +49,7 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
     }, {});
 
     return (
-        <div className="flex h-[calc(100dvh-64px)] bg-slate-950 overflow-hidden">
+        <div className="flex h-[100dvh] bg-slate-950 overflow-hidden">
             {/* Sidebar - Contact List */}
             <div className={`${selectedUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-white/10 bg-slate-900/50 flex-col`}>
                 <div className="p-4 border-b border-white/10">
@@ -123,12 +123,6 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
                         </div>
                     </div>
                     <div className="flex items-center gap-4 text-slate-400">
-                        <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                            <Phone className="w-5 h-5" />
-                        </button>
-                        <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                            <Video className="w-5 h-5" />
-                        </button>
                         <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
                             <MoreVertical className="w-5 h-5" />
                         </button>
