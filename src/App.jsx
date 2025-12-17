@@ -89,7 +89,6 @@ function App() {
         }));
         setChatMessages(msgs);
 
-        setChatMessages(msgs);
       });
 
 
@@ -127,6 +126,7 @@ function App() {
       });
     } catch (e) {
       console.error("Error sending message: ", e);
+      alert("Mesaj gönderilemedi: " + e.message);
     }
   };
 
