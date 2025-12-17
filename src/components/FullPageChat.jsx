@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Send, Paperclip, Smile, MoreVertical, Phone, Video, Search, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -84,9 +85,9 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
         return groups;
     }, {});
 
-    return (
+    return ReactDOM.createPortal(
         <div
-            className="fixed inset-0 z-50 bg-slate-950 flex flex-col md:static"
+            className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col md:static"
             style={{ height: viewportHeight }}
         >
             {/* Sidebar - Contact List */}
@@ -235,7 +236,8 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
                     </form>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
