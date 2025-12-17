@@ -310,7 +310,7 @@ function App() {
         )}
       </main>
 
-      <MusicPlayer playlist={playlist} />
+      {currentView !== 'chat' && <MusicPlayer playlist={playlist} />}
 
       {userType === 'couple' && currentView !== 'chat' && (
         <Chat
