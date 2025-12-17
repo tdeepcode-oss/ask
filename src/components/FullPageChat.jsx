@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Paperclip, Smile, MoreVertical, Phone, Video, Search, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => {
+const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, onBack }) => {
     const [newMessage, setNewMessage] = useState('');
     // On mobile, start with no user selected to show the list first
     const [selectedUser, setSelectedUser] = useState(window.innerWidth > 768 ? (currentUser === 'him' ? 'her' : 'him') : null);
@@ -15,6 +15,20 @@ const FullPageChat = ({ messages = [], onSendMessage, currentUser, onBack }) => 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    // Mark messages as seen
+    useEffect(() => {
+        if (!onMarkSeen || !currentUser) return;
+
+        const unseenMessages = messages.filter(msg =>
+            msg.sender !== currentUser && !msg.seenAt
+        );
+
+        if (unseenMessages.length > 0) {
+            const unseenIds = unseenMessages.map(msg => msg.id);
+            onMarkSeen(unseenIds);
+        }
+    }, [messages, currentUser, onMarkSeen]);
 
     // Dynamic Viewport Height Hook
     const [viewportHeight, setViewportHeight] = useState('100dvh');
