@@ -206,69 +206,71 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white selection:bg-rose-500/30">
-      <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-sm border-b border-white/10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div
-            className="flex items-center gap-2 text-rose-500 cursor-pointer"
-            onClick={() => setCurrentView('home')}
-          >
-            <Heart className="w-6 h-6 fill-current animate-pulse" />
-            <span className="font-bold text-xl tracking-tight hidden md:inline">Bizim Hikayemiz</span>
-            {/* DEBUG OVERLAY */}
-            <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4 hidden md:block">
-              Debug: {currentUser || 'NULL'} ({userType}) - {new Date().toLocaleTimeString()}
+      {currentView !== 'chat' && (
+        <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-sm border-b border-white/10">
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div
+              className="flex items-center gap-2 text-rose-500 cursor-pointer"
+              onClick={() => setCurrentView('home')}
+            >
+              <Heart className="w-6 h-6 fill-current animate-pulse" />
+              <span className="font-bold text-xl tracking-tight hidden md:inline">Bizim Hikayemiz</span>
+              {/* DEBUG OVERLAY */}
+              <div className="text-xs bg-black/50 p-1 rounded text-green-400 font-mono ml-4 hidden md:block">
+                Debug: {currentUser || 'NULL'} ({userType}) - {new Date().toLocaleTimeString()}
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
-              <button
-                onClick={() => setCurrentView('home')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'home'
-                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
-                  : 'text-slate-400 hover:text-white'
-                  }`}
-              >
-                <Home className="w-4 h-4 md:hidden" />
-                <span className="hidden md:inline">Ana Sayfa</span>
-              </button>
-              <button
-                onClick={() => setCurrentView('recipes')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'recipes'
-                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
-                  : 'text-slate-400 hover:text-white'
-                  }`}
-              >
-                <BookOpen className="w-4 h-4 md:hidden" />
-                <span className="hidden md:inline">Tarifler</span>
-              </button>
-              {userType === 'couple' && (
+            <div className="flex items-center gap-4">
+              <nav className="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
                 <button
-                  onClick={() => setCurrentView('chat')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${currentView === 'chat'
+                  onClick={() => setCurrentView('home')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'home'
                     ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
                     : 'text-slate-400 hover:text-white'
                     }`}
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="hidden md:inline">Mesajlar</span>
+                  <Home className="w-4 h-4 md:hidden" />
+                  <span className="hidden md:inline">Ana Sayfa</span>
+                </button>
+                <button
+                  onClick={() => setCurrentView('recipes')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentView === 'recipes'
+                    ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                    : 'text-slate-400 hover:text-white'
+                    }`}
+                >
+                  <BookOpen className="w-4 h-4 md:hidden" />
+                  <span className="hidden md:inline">Tarifler</span>
+                </button>
+                {userType === 'couple' && (
+                  <button
+                    onClick={() => setCurrentView('chat')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${currentView === 'chat'
+                      ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                      : 'text-slate-400 hover:text-white'
+                      }`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="hidden md:inline">Mesajlar</span>
+                  </button>
+                )}
+              </nav>
+
+              {userType === 'couple' && (
+                <button
+                  onClick={() => setShowAdmin(true)}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
+                >
+                  <Settings className="w-5 h-5" />
                 </button>
               )}
-            </nav>
-
-            {userType === 'couple' && (
-              <button
-                onClick={() => setShowAdmin(true)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-            )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      <main className={`container mx-auto px-4 pt-24 pb-12 space-y-20 ${currentView === 'chat' ? 'h-[100dvh] overflow-hidden pt-16 pb-0 px-0 max-w-none' : ''}`}>
+      <main className={`container mx-auto px-4 pt-24 pb-12 space-y-20 ${currentView === 'chat' ? 'h-[100dvh] overflow-hidden pt-0 pb-0 px-0 max-w-none' : ''}`}>
         {currentView === 'home' ? (
           <>
             <section className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
