@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Bell, BellOff } from 'lucide-react';
+import { MessageCircle, X, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Chat = ({ messages = [], onSendMessage, currentUser, notificationsEnabled, onToggleNotifications }) => {
+const Chat = ({ messages = [], onSendMessage, currentUser }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
@@ -29,24 +29,7 @@ const Chat = ({ messages = [], onSendMessage, currentUser, notificationsEnabled,
         }
     };
 
-    const handleToggleNotifications = async () => {
-        if (!notificationsEnabled) {
-            // Turning ON
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                onToggleNotifications();
-                new Notification("Bildirimler Açıldı! 🔔", {
-                    body: "Artık mesaj gelince sesli uyarı alacaksın.",
-                    icon: "/pwa-192x192.png"
-                });
-            } else {
-                alert("Bildirim izni verilmedi. Tarayıcı ayarlarından izin vermen gerekebilir.");
-            }
-        } else {
-            // Turning OFF
-            onToggleNotifications();
-        }
-    };
+
 
     const formatTime = (isoString) => {
         const date = new Date(isoString);
@@ -72,16 +55,7 @@ const Chat = ({ messages = [], onSendMessage, currentUser, notificationsEnabled,
                                 <h3 className="font-bold text-white">Bizim Sohbetimiz</h3>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handleToggleNotifications}
-                                    className={`p-2 rounded-lg transition-colors ${notificationsEnabled
-                                            ? 'bg-rose-500/20 text-rose-400 hover:bg-rose-500/30'
-                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                        }`}
-                                    title={notificationsEnabled ? "Bildirimleri Kapat" : "Bildirimleri Aç"}
-                                >
-                                    {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-                                </button>
+
                                 <button
                                     onClick={() => setIsOpen(false)}
                                     className="p-1 hover:bg-white/10 rounded-full transition-colors"
