@@ -87,7 +87,7 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
 
     return ReactDOM.createPortal(
         <div
-            className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col md:static"
+            className="fixed top-0 left-0 w-full z-[9999] bg-slate-950 flex flex-col md:static overscroll-none"
             style={{ height: viewportHeight }}
         >
             {/* Sidebar - Contact List */}
@@ -207,7 +207,7 @@ const FullPageChat = ({ messages = [], onSendMessage, onMarkSeen, currentUser, o
 
                 {/* Input Area */}
                 <div
-                    className="p-4 bg-slate-900/50 border-t border-white/10 backdrop-blur-md"
+                    className="p-4 bg-slate-900 border-t border-white/10 backdrop-blur-md"
                     style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
                 >
                     <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
